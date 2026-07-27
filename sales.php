@@ -1,0 +1,70 @@
+<?php
+session_start();
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
+require 'config/db.php';
+
+$stmt = $pdo->query("SELECT * FROM devices WHERE status = 'Available' ORDER BY brand, model");
+$available_devices = $stmt->fetchAll();
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $device_id = $_POST['device_id'];
+    $buyer_name = $_POST['buyer_name'];
+    $selling_price = $_POST['selling_price'];
+    $sale_date = $_POST['sale_date'];
+
+    $stmt = $pdo->prepare("INSERT INTO sales (device_id, buyer_name, selling_price, sale_date) VALUES (?, ?, ?, ?)");
+    $stmt->execute([$device_id, $buyer_name, $selling_price, $sale_date]);
+
+    $stmt2 = $pdo->prepare("UPDATE devices SET status = 'Sold' WHERE id = ?");
+    $stmt2->execute([$device_id]);
+
+    header('Location: inventory.php');
+    exit;
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Record Sale - Mobile Shop</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<?php include 'includes/navbar.php'; ?>
+<div class="container mt-5" style="max-width: 600px;">
+    <h2 class="mb-4">Record Sale</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">Select Device</label>
+            <select name="device_id" class="form-select" required>
+                <option value="">Select a device</option>
+                <?php foreach ($available_devices as $d): ?>
+                    <option value="<?= $d['id'] ?>">
+                        <?= htmlspecialchars($d['brand'] . ' ' . $d['model'] . ' - ' . $d['imei_serial']) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Buyer Name (optional)</label>
+            <input type="text" name="buyer_name" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Selling Price</label>
+            <input type="number" step="0.01" name="selling_price" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Sale Date</label>
+            <input type="date" name="sale_date" class="form-control" required>
+        </div>
+        <div class="d-flex gap-2">
+            <button type="submit" class="btn btn-primary w-100">Record Sale</button>
+            <a href="inventory.php" class="btn btn-outline-secondary w-100">Cancel</a>
+        </div>
+    </form>
+</div>
+</body>
+</html>

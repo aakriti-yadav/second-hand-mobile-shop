@@ -5,6 +5,7 @@
             <a class="nav-link" href ="index.php">Dashboard</a>
             <a class="nav-link" href ="inventory.php">Inventory</a>
             <a class="nav-link" href ="add_device.php">Add Device</a>
+            <a class="nav-link" href="sales.php">Sales</a>
             <a class="nav-link" href ="logout.php">Logout</a>
         </div>
     </div>  
