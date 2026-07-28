@@ -6,8 +6,17 @@ if (!isset($_SESSION['user_id'])) {
 }
 require 'config/db.php';
 
-$stmt = $pdo->query("SELECT * FROM devices ORDER BY created_at DESC");
+$search = isset($_GET['search']) ? $_GET['search'] : '';
+
+if ($search !== '') {
+    $stmt = $pdo->prepare("SELECT * FROM devices WHERE brand LIKE ? OR model LIKE ? OR imei_serial LIKE ? ORDER BY created_at DESC");
+    $searchTerm = '%' . $search . '%';
+    $stmt->execute([$searchTerm, $searchTerm, $searchTerm]);
+} else {
+    $stmt = $pdo->query("SELECT * FROM devices ORDER BY created_at DESC");
+}
 $devices = $stmt->fetchAll();
+
 ?>
 
 <!DOCTYPE html>
@@ -21,6 +30,13 @@ $devices = $stmt->fetchAll();
 <div class="container mt-5">
     <h2 class="mb-4">Inventory</h2>
     <a href="add_device.php" class="btn btn-primary mb-3">+ Add Device</a>
+    <form method="GET" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search by brand, model, or IMEI/serial" value="<?= htmlspecialchars($search) ?>">
+            <button type="submit" class="btn btn-outline-primary">Search</button>
+            <a href="inventory.php" class="btn btn-outline-secondary">Clear</a>
+        </div>
+    </form>
 
     <table class="table table-striped">
         <thead>
@@ -39,6 +55,11 @@ $devices = $stmt->fetchAll();
             </tr>
         </thead>
         <tbody>
+            <?php if (empty($devices)): ?>
+            <tr>
+                <td colspan="10" class="text-center text-muted">No devices found matching your search.</td>
+            </tr>
+        <?php else: ?>
             <?php foreach ($devices as $device): ?>
             <tr>
                 <td><?= htmlspecialchars($device['brand']) ?></td>
@@ -62,6 +83,7 @@ $devices = $stmt->fetchAll();
                 </td>
             </tr>
             <?php endforeach; ?>
+            <?php endif; ?>
         </tbody>
     </table>
 </div>
