@@ -25,11 +25,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         move_uploaded_file($_FILES['device_image']['tmp_name'], $upload_path);
     }
 
+    try {
     $stmt = $pdo->prepare("INSERT INTO devices (brand, model, device_type, imei_serial, storage, battery_health, condition_notes, purchase_price, asking_price, purchase_date, image_filename) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-$stmt->execute([$brand, $model, $device_type, $imei_serial, $storage, $battery_health, $condition_notes, $purchase_price, $asking_price, $purchase_date, $image_filename]);
+    $stmt->execute([$brand, $model, $device_type, $imei_serial, $storage, $battery_health, $condition_notes, $purchase_price, $asking_price, $purchase_date, $image_filename]);
 
     header('Location: index.php');
     exit;
+} catch (PDOException $e) {
+    if ($e->getCode() == 23000) {
+        $error = "A device with this IMEI/Serial number already exists.";
+    } else {
+        $error = "Something went wrong. Please try again.";
+    }
+}
 }
 ?>
 
@@ -43,6 +51,9 @@ $stmt->execute([$brand, $model, $device_type, $imei_serial, $storage, $battery_h
     <?php include 'includes/navbar.php'; ?>
 <div class="container mt-5" style="max-width: 600px;">
     <h2 class="mb-4">Add New Device</h2>
+    <?php if (isset($error)): ?>
+        <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+    <?php endif; ?>
     <form method="POST" enctype="multipart/form-data">
         <div class="mb-3">
             <label class="form-label">Brand</label>
