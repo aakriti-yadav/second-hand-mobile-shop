@@ -18,8 +18,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $asking_price = $_POST['asking_price'];
     $purchase_date = $_POST['purchase_date'];
 
-    $stmt = $pdo->prepare("INSERT INTO devices (brand, model, device_type, imei_serial, storage, battery_health, condition_notes, purchase_price, asking_price, purchase_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->execute([$brand, $model, $device_type, $imei_serial, $storage, $battery_health, $condition_notes, $purchase_price, $asking_price, $purchase_date]);
+    $image_filename = null;
+    if (isset($_FILES['device_image']) && $_FILES['device_image']['error'] === UPLOAD_ERR_OK) {
+        $image_filename = uniqid() . '_' . basename($_FILES['device_image']['name']);
+        $upload_path = 'assets/uploads/' . $image_filename;
+        move_uploaded_file($_FILES['device_image']['tmp_name'], $upload_path);
+    }
+
+    $stmt = $pdo->prepare("INSERT INTO devices (brand, model, device_type, imei_serial, storage, battery_health, condition_notes, purchase_price, asking_price, purchase_date, image_filename) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+$stmt->execute([$brand, $model, $device_type, $imei_serial, $storage, $battery_health, $condition_notes, $purchase_price, $asking_price, $purchase_date, $image_filename]);
 
     header('Location: index.php');
     exit;
@@ -36,10 +43,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php include 'includes/navbar.php'; ?>
 <div class="container mt-5" style="max-width: 600px;">
     <h2 class="mb-4">Add New Device</h2>
-    <form method="POST">
+    <form method="POST" enctype="multipart/form-data">
         <div class="mb-3">
             <label class="form-label">Brand</label>
             <input type="text" name="brand" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Device Image (optional)</label>
+            <input type="file" name="device_image" class="form-control" accept="image/*">
         </div>
         <div class="mb-3">
             <label class="form-label">Model</label>

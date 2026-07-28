@@ -26,6 +26,7 @@ $devices = $stmt->fetchAll();
         <thead>
             <tr>
                 <th>Brand</th>
+                <th>Image</th>
                 <th>Model</th>
                 <th>Type</th>
                 <th>IMEI/Serial</th>
@@ -41,6 +42,13 @@ $devices = $stmt->fetchAll();
             <?php foreach ($devices as $device): ?>
             <tr>
                 <td><?= htmlspecialchars($device['brand']) ?></td>
+                <td>
+                    <?php if ($device['image_filename']): ?>
+                        <img src="assets/uploads/<?= htmlspecialchars($device['image_filename']) ?>" width="60" height="60" style="object-fit: cover;">
+                    <?php else: ?>
+                        No image
+                    <?php endif; ?>
+                </td>
                 <td><?= htmlspecialchars($device['model']) ?></td>
                 <td><?= htmlspecialchars($device['device_type']) ?></td>
                 <td><?= htmlspecialchars($device['imei_serial']) ?></td>
