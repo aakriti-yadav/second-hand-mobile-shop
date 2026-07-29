@@ -18,6 +18,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $asking_price = $_POST['asking_price'];
     $purchase_date = $_POST['purchase_date'];
 
+    $errors = [];
+     if (empty(trim($brand))) {
+        $errors[] = "Brand is required.";
+    }
+    if (empty(trim($model))) {
+        $errors[] = "Model is required.";
+    }
+    if ($purchase_price <= 0) {
+        $errors[] = "Purchase price must be greater than 0.";
+    }
+    if ($asking_price <= 0) {
+        $errors[] = "Asking price must be greater than 0.";
+    }
+    if ($battery_health !== null && ($battery_health < 0 || $battery_health > 100)) {
+        $errors[] = "Battery health must be between 0 and 100.";
+    }
+
     $image_filename = null;
     if (isset($_FILES['device_image']) && $_FILES['device_image']['error'] === UPLOAD_ERR_OK) {
         $image_filename = uniqid() . '_' . basename($_FILES['device_image']['name']);
@@ -25,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         move_uploaded_file($_FILES['device_image']['tmp_name'], $upload_path);
     }
 
+    if (empty($errors)) { 
     try {
     $stmt = $pdo->prepare("INSERT INTO devices (brand, model, device_type, imei_serial, storage, battery_health, condition_notes, purchase_price, asking_price, purchase_date, image_filename) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->execute([$brand, $model, $device_type, $imei_serial, $storage, $battery_health, $condition_notes, $purchase_price, $asking_price, $purchase_date, $image_filename]);
@@ -33,9 +51,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     exit;
 } catch (PDOException $e) {
     if ($e->getCode() == 23000) {
-        $error = "A device with this IMEI/Serial number already exists.";
+        $errors[] = "A device with this IMEI/Serial number already exists.";
     } else {
-        $error = "Something went wrong. Please try again.";
+        $errors[] = "Something went wrong. Please try again.";
+    }
     }
 }
 }
@@ -51,8 +70,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php include 'includes/navbar.php'; ?>
 <div class="container mt-5" style="max-width: 600px;">
     <h2 class="mb-4">Add New Device</h2>
-    <?php if (isset($error)): ?>
-        <div class="alert alert-danger"><?= htmlspecialchars($error) ?></div>
+    <?php if (!empty($errors)): ?>
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            <?php foreach ($errors as $err): ?>
+                <li><?= htmlspecialchars($err) ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
     <?php endif; ?>
     <form method="POST" enctype="multipart/form-data">
         <div class="mb-3">
