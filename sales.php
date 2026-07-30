@@ -15,6 +15,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $selling_price = $_POST['selling_price'];
     $sale_date = $_POST['sale_date'];
 
+    $errors = [];
+
+    if (empty($device_id)) {
+        $errors[] = "Please select a device.";
+    }
+    if ($selling_price <= 0) {
+        $errors[] = "Selling price must be greater than 0.";
+    }
+
+    if (empty($errors)) { 
     $stmt = $pdo->prepare("INSERT INTO sales (device_id, buyer_name, selling_price, sale_date) VALUES (?, ?, ?, ?)");
     $stmt->execute([$device_id, $buyer_name, $selling_price, $sale_date]);
 
@@ -23,6 +33,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     header('Location: inventory.php');
     exit;
+    }
 }
 ?>
 
@@ -36,6 +47,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php include 'includes/navbar.php'; ?>
 <div class="container mt-5" style="max-width: 600px;">
     <h2 class="mb-4">Record Sale</h2>
+    <?php if (!empty($errors)): ?>
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            <?php foreach ($errors as $err): ?>
+                <li><?= htmlspecialchars($err) ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    <?php endif; ?>
     <form method="POST">
         <div class="mb-3">
             <label class="form-label">Select Device</label>
