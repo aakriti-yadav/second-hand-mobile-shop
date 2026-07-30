@@ -30,11 +30,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $status = $_POST['status'];
     $purchase_date = $_POST['purchase_date'];
 
+    $errors = [];
+
+    if (empty(trim($brand))) {
+        $errors[] = "Brand is required.";
+    }
+    if (empty(trim($model))) {
+        $errors[] = "Model is required.";
+    }
+    if ($purchase_price <= 0) {
+        $errors[] = "Purchase price must be greater than 0.";
+    }
+    if ($asking_price <= 0) {
+        $errors[] = "Asking price must be greater than 0.";
+    }
+    if ($battery_health !== null && ($battery_health < 0 || $battery_health > 100)) {
+        $errors[] = "Battery health must be between 0 and 100.";
+    }
+
+    if (empty($errors)) { 
     $stmt = $pdo->prepare("UPDATE devices SET brand=?, model=?, device_type=?, imei_serial=?, storage=?, battery_health=?, condition_notes=?, purchase_price=?, asking_price=?, status=?, purchase_date=? WHERE id=?");
     $stmt->execute([$brand, $model, $device_type, $imei_serial, $storage, $battery_health, $condition_notes, $purchase_price, $asking_price, $status, $purchase_date, $id]);
 
     header('Location: inventory.php');
     exit;
+    }
 }
 ?>
 
@@ -47,6 +67,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <?php include 'includes/navbar.php'; ?>
 <div class="container mt-5" style="max-width: 600px;">
     <h2 class="mb-4">Edit Device</h2>
+    <?php if (!empty($errors)): ?>
+    <div class="alert alert-danger">
+        <ul class="mb-0">
+            <?php foreach ($errors as $err): ?>
+                <li><?= htmlspecialchars($err) ?></li>
+            <?php endforeach; ?>
+        </ul>
+    </div>
+    <?php endif; ?>
     <form method="POST">
         <div class="mb-3">
             <label class="form-label">Brand</label>
