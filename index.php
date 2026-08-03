@@ -41,25 +41,25 @@ $recent_devices = $stmt->fetchAll();
 
         <div class="row mb-4">
             <div class="col-md-3 mb-3">
-                <div class="stat-card">
+                <div class="stat-card accent-success">
                     <div class="stat-label">In Stock</div>
                     <div class="stat-value"><?= $in_stock ?></div>
                 </div>
             </div>
             <div class="col-md-3 mb-3">
-                <div class="stat-card">
+                <div class="stat-card accent-warning">
                     <div class="stat-label">Devices Sold</div>
                     <div class="stat-value"><?= $total_sold ?></div>
                 </div>
             </div>
             <div class="col-md-3 mb-3">
-                <div class="stat-card">
+                <div class="stat-card accent-primary">
                     <div class="stat-label">Revenue</div>
                     <div class="stat-value"><?= number_format($total_revenue, 0) ?></div>
                 </div>
             </div>
             <div class="col-md-3 mb-3">
-                <div class="stat-card">
+                <div class="stat-card accent-primary">
                     <div class="stat-label">Profit</div>
                     <div class="stat-value"><?= number_format($total_profit, 0) ?></div>
                 </div>

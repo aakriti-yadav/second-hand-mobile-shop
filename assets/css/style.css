@@ -3,22 +3,23 @@
    Theme: Refurbished Tech / Workbench Precision
    ============================================ */
 
-:root {
+  :root {
   /* Color tokens */
-  --color-bg: #F5F3EF;
+  --color-bg: #FAF8F4;
   --color-surface: #FFFFFF;
   --color-ink: #1C1F26;
-  --color-ink-muted: #5A5F6B;
-  --color-primary: #3D5A6C;
-  --color-primary-dark: #2C4250;
-  --color-accent: #C8763A;
-  --color-success: #7A8471;
-  --color-success-bg: #EDF0E9;
-  --color-warning: #C8763A;
-  --color-warning-bg: #FBEEE3;
+  --color-ink-muted: #6B7280;
+  --color-primary: #4A6A8C;
+  --color-primary-dark: #35506B;
+  --color-accent: #D68A4C;
+  --color-success: #4A7A68;
+  --color-success-bg: #E8F0EC;
+  --color-warning: #D68A4C;
+  --color-warning-bg: #FBEEE0;
   --color-neutral: #9098A3;
-  --color-neutral-bg: #EEF0F2;
-  --color-border: #E2DFD8;
+  --color-neutral-bg: #F0EDE6;
+  --color-border: #E5E1D8;
+  --color-sidebar: #20242C;
 
   /* Type */
   --font-display: 'IBM Plex Mono', 'Courier New', monospace;
@@ -58,11 +59,10 @@ h1, h2, h3, h4, h5, h6 {
   display: flex;
   min-height: 100vh;
 }
-
 .sidebar {
   width: 240px;
-  background: var(--color-ink);
-  color: #E8E6E1;
+  background: var(--color-primary);
+  color: #E8ECF0;
   flex-shrink: 0;
   padding: 24px 0;
   position: sticky;
@@ -76,20 +76,11 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   color: #fff;
   padding: 0 24px 24px 24px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255,255,255,0.15);
   margin-bottom: 16px;
   display: flex;
   align-items: center;
   gap: 8px;
-}
-
-.sidebar-brand::before {
-  content: "";
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
-  background: var(--color-accent);
-  display: inline-block;
 }
 
 .sidebar-nav a {
@@ -97,7 +88,7 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   gap: 10px;
   padding: 11px 24px;
-  color: #B8B6B1;
+  color: #C5D0DA;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -106,12 +97,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .sidebar-nav a:hover {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255,255,255,0.08);
   color: #fff;
 }
 
 .sidebar-nav a.active {
-  background: rgba(200, 118, 58, 0.12);
+  background: rgba(255,255,255,0.12);
   color: #fff;
   border-left-color: var(--color-accent);
 }
@@ -129,11 +120,15 @@ h1, h2, h3, h4, h5, h6 {
 .stat-card {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-neutral);
   border-radius: var(--radius);
   padding: 20px 22px;
   box-shadow: var(--shadow-sm);
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
+.stat-card.accent-success { border-left-color: var(--color-success); }
+.stat-card.accent-warning { border-left-color: var(--color-accent); }
+.stat-card.accent-primary { border-left-color: var(--color-primary); }
 
 .stat-card:hover {
   box-shadow: var(--shadow-md);
