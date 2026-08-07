@@ -254,6 +254,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 .status-unavailable::before { background: var(--color-neutral); }
 
+.login-page {
+  min-height:100vh;
+  background:#FAF8F4 url("../images/login-bg.svg") no-repeat center center;
+  background-size:cover;
+}
+
 /* ============================================
    Forms
    ============================================ */
@@ -266,7 +272,7 @@ h1, h2, h3, h4, h5, h6 {
 .form-label {
   font-weight: 500;
   font-size: 13px;
-  color: var(--color-ink-muted);
+  color: var(--color-ink);
   margin-bottom: 4px;
 }
 
